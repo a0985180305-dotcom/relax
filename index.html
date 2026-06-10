@@ -231,12 +231,128 @@ body { font-family: 'Noto Sans TC', sans-serif; background: var(--bg); color: va
   <div style="height:20px;"></div>
 </div>
 
+<!-- 編輯客戶 -->
+<div id="s-edit-client" class="screen">
+  <div class="topbar">
+    <button class="btn btn-icon btn-ghost" onclick="showProfile(currentClientId)">← 返回</button>
+    <h1>編輯客戶資料</h1>
+    <button class="btn btn-primary btn-sm" onclick="saveEditClient()">儲存</button>
+  </div>
+  <div class="section">
+    <div class="section-label">負責調理師</div>
+    <div class="therapist-row">
+      <button class="therapist-btn glan" id="eb-glan" onclick="selectTherapist('glan')">鈞</button>
+      <button class="therapist-btn xuan" id="eb-xuan" onclick="selectTherapist('xuan')">萱</button>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="section">
+    <div class="section-label">基本資料</div>
+    <div class="field"><label>姓名 *</label><input id="ec-name" placeholder="客戶姓名" autocomplete="off"></div>
+    <div class="row2">
+      <div class="field"><label>性別</label><select id="ec-gender"><option value="">—</option><option>女</option><option>男</option><option>其他</option></select></div>
+      <div class="field"><label>年齡</label><input id="ec-age" type="number" placeholder="歲"></div>
+    </div>
+    <div class="field"><label>聯絡方式</label><input id="ec-contact" placeholder="電話 / LINE"></div>
+    <div class="field"><label>職業 / 生活型態</label><input id="ec-job" placeholder="例：久坐辦公室、教師"></div>
+  </div>
+  <div class="divider"></div>
+  <div class="section">
+    <div class="section-label">健康背景</div>
+    <div class="field"><label>病史 / 手術史</label><textarea id="ec-history"></textarea></div>
+    <div class="field"><label>目前用藥</label><input id="ec-meds" placeholder="若無請填「無」"></div>
+    <div class="field"><label>禁忌 / 特殊注意事項</label><textarea id="ec-contra" style="border-color:#e8b4ae;"></textarea></div>
+  </div>
+  <div class="divider"></div>
+  <div class="section">
+    <div class="section-label">體質評估</div>
+    <div class="field"><label>主要體質傾向</label>
+      <div class="chip-row" id="ec-constitution">
+        <span class="chip" onclick="toggleChip(this)">氣滯</span><span class="chip" onclick="toggleChip(this)">血瘀</span><span class="chip" onclick="toggleChip(this)">陽虛</span><span class="chip" onclick="toggleChip(this)">陰虛</span><span class="chip" onclick="toggleChip(this)">痰濕</span><span class="chip" onclick="toggleChip(this)">氣虛</span><span class="chip" onclick="toggleChip(this)">肝鬱</span><span class="chip" onclick="toggleChip(this)">濕熱</span>
+      </div>
+    </div>
+    <div class="field"><label>調理師初評小結</label><textarea id="ec-assessment"></textarea></div>
+  </div>
+  <div class="divider"></div>
+  <div class="section">
+    <div class="section-label">調理重點方向</div>
+    <div class="field"><label>優先處理部位 / 經絡</label><textarea id="ec-meridian"></textarea></div>
+    <div class="field"><label>根本調理方向</label><textarea id="ec-direction"></textarea></div>
+  </div>
+  <div style="height:20px;"></div>
+</div>
+
+<!-- 編輯調理紀錄 -->
+<div id="s-edit-session" class="screen">
+  <div class="topbar">
+    <button class="btn btn-icon btn-ghost" onclick="showProfile(currentClientId)">← 返回</button>
+    <h1>編輯調理紀錄</h1>
+    <button class="btn btn-primary btn-sm" onclick="saveEditSession()">儲存</button>
+  </div>
+  <div class="section">
+    <div class="section-label">本次調理師</div>
+    <div class="therapist-row">
+      <button class="therapist-btn glan" id="esb-glan" onclick="selectEditSessionTherapist('glan')">鈞</button>
+      <button class="therapist-btn xuan" id="esb-xuan" onclick="selectEditSessionTherapist('xuan')">萱</button>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="section">
+    <div class="section-label">上次回報</div>
+    <div class="field"><label>客戶反映</label><textarea id="es-feedback"></textarea></div>
+  </div>
+  <div class="divider"></div>
+  <div class="section">
+    <div class="section-label">調理前評估</div>
+    <div class="field"><label>今日主訴</label><textarea id="es-complaint"></textarea></div>
+    <div class="row2">
+      <div class="field"><label>疼痛感（前）0–10</label><input id="es-pb" type="number" min="0" max="10" placeholder="分"></div>
+      <div class="field"><label>緊繃感（前）0–10</label><input id="es-tb" type="number" min="0" max="10" placeholder="分"></div>
+    </div>
+    <div class="field"><label>舌象觀察</label><input id="es-tongue"></div>
+  </div>
+  <div class="divider"></div>
+  <div class="section">
+    <div class="section-label">本次施作</div>
+    <div class="field"><label>操作部位 / 經絡</label><textarea id="es-areas"></textarea></div>
+    <div class="field"><label>使用手法</label>
+      <div class="chip-row" id="es-techniques">
+        <span class="chip" onclick="toggleChip(this)">撥筋</span><span class="chip" onclick="toggleChip(this)">推拿</span><span class="chip" onclick="toggleChip(this)">熱敷</span><span class="chip" onclick="toggleChip(this)">拍打</span><span class="chip" onclick="toggleChip(this)">拔罐</span><span class="chip" onclick="toggleChip(this)">刮痧</span><span class="chip" onclick="toggleChip(this)">精油</span>
+      </div>
+    </div>
+    <div class="field"><label>特別發現</label><textarea id="es-findings"></textarea></div>
+  </div>
+  <div class="divider"></div>
+  <div class="section">
+    <div class="section-label">調理後評估</div>
+    <div class="row2">
+      <div class="field"><label>疼痛感（後）0–10</label><input id="es-pa" type="number" min="0" max="10" placeholder="分"></div>
+      <div class="field"><label>緊繃感（後）0–10</label><input id="es-ta" type="number" min="0" max="10" placeholder="分"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>睡眠品質 1–5</label><input id="es-sleep" type="number" min="1" max="5" placeholder="分"></div>
+      <div class="field"><label>精神狀態 1–5</label><input id="es-energy" type="number" min="1" max="5" placeholder="分"></div>
+    </div>
+    <div class="field"><label>客戶即時感受</label><textarea id="es-response"></textarea></div>
+  </div>
+  <div class="divider"></div>
+  <div class="section">
+    <div class="section-label">下次提醒</div>
+    <div class="field"><label>居家保養建議</label><textarea id="es-homecare"></textarea></div>
+    <div class="field"><label>下次調理重點</label><textarea id="es-next"></textarea></div>
+  </div>
+  <div style="height:20px;"></div>
+</div>
+
 <!-- 客戶頁面 -->
 <div id="s-profile" class="screen">
   <div class="topbar">
     <button class="btn btn-icon btn-ghost" onclick="goHome()">← 返回</button>
     <h1 id="profile-title"></h1>
-    <button class="btn btn-sm btn-ghost" onclick="deleteClient()">刪除</button>
+    <div style="display:flex;gap:6px;">
+      <button class="btn btn-sm btn-ghost" onclick="showEditClient()">編輯</button>
+      <button class="btn btn-sm btn-ghost" style="color:var(--red)" onclick="deleteClient()">刪除</button>
+    </div>
   </div>
   <div id="profile-content"></div>
   <div class="section">
@@ -361,11 +477,21 @@ onSnapshot(collection(db, 'clients'), (snapshot) => {
   console.error(err);
 });
 
-function show(id) {
+function show(id, pushState=true) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   window.scrollTo(0,0);
+  if (pushState) history.pushState({ screen: id, clientId: currentClientId }, '');
 }
+
+window.addEventListener('popstate', (e) => {
+  const state = e.state;
+  if (!state) { renderList(); document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById('s-list').classList.add('active'); return; }
+  if (state.screen === 's-list') { renderList(); document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById('s-list').classList.add('active'); }
+  else if (state.screen === 's-profile' && state.clientId) { currentClientId = state.clientId; const c = clients.find(x=>x.id===state.clientId); if(c) { document.getElementById('profile-title').textContent=c.name; const tag=c.therapist==='glan'?'<span class="therapist-tag tag-glan">鈞</span>':c.therapist==='xuan'?'<span class="therapist-tag tag-xuan">萱</span>':''; const avStyle=c.therapist==='glan'?'background:#e8f0ff;color:#3b5bdb;border-color:#b8c8f8':c.therapist==='xuan'?'background:#fce8f3;color:#c2255c;border-color:#f8b8d8':''; document.getElementById('profile-content').innerHTML=`<div class="profile-header"><div class="profile-avatar" style="${avStyle}">${initials(c.name)}</div><div><div class="profile-name">${c.name}${tag}</div><div class="profile-sub">${c.gender||''}${c.age?' · '+c.age+'歲':''}${c.job?' · '+c.job:''}</div></div></div>`; renderSessions(c); } document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById('s-profile').classList.add('active'); }
+  else if (state.screen === 's-new-client') { document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById('s-new-client').classList.add('active'); }
+  else if (state.screen === 's-new-session') { document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById('s-new-session').classList.add('active'); }
+});
 
 window.goHome = () => { renderList(); show('s-list'); };
 
@@ -415,8 +541,8 @@ function renderList() {
 
 window.selectTherapist = (t) => {
   currentTherapist = t;
-  document.getElementById('tb-glan').classList.toggle('on', t==='glan');
-  document.getElementById('tb-xuan').classList.toggle('on', t==='xuan');
+  ['tb-glan','eb-glan'].forEach(id => { const el=document.getElementById(id); if(el) el.classList.toggle('on', t==='glan'); });
+  ['tb-xuan','eb-xuan'].forEach(id => { const el=document.getElementById(id); if(el) el.classList.toggle('on', t==='xuan'); });
 };
 window.selectSessionTherapist = (t) => {
   currentSessionTherapist = t;
@@ -518,7 +644,10 @@ function renderSessions(c) {
     return `<div class="session-card">
       <div class="session-head">
         <div><div class="session-num">第 ${i+1} 次${stag}</div><div class="session-date">${fmt(s.date)}</div></div>
-        <button class="btn btn-sm btn-ghost" onclick="delSession(${i})">刪除</button>
+        <div style="display:flex;gap:4px;">
+          <button class="btn btn-sm btn-ghost" onclick="editSession(${i})">編輯</button>
+          <button class="btn btn-sm btn-ghost" style="color:var(--red)" onclick="delSession(${i})">刪除</button>
+        </div>
       </div>
       ${scoreHtml}
       ${s.feedback?`<div class="note-block"><div class="note-label">上次回報</div><div class="note-text">${s.feedback}</div></div>`:''}
@@ -577,6 +706,126 @@ window.saveSession = async () => {
     homecare: document.getElementById('ns-homecare').value,
     next: document.getElementById('ns-next').value
   });
+  setSyncing(true);
+  try { await updateDoc(doc(db,'clients',currentClientId),{sessions}); } finally { setSyncing(false); }
+  showProfile(currentClientId);
+};
+let currentEditSessionIdx = null;
+let currentEditSessionTherapist = 'glan';
+
+window.selectEditSessionTherapist = (t) => {
+  currentEditSessionTherapist = t;
+  document.getElementById('esb-glan').classList.toggle('on', t==='glan');
+  document.getElementById('esb-xuan').classList.toggle('on', t==='xuan');
+};
+
+window.showEditClient = () => {
+  const c = clients.find(x=>x.id===currentClientId);
+  if (!c) return;
+  document.getElementById('ec-name').value = c.name||'';
+  document.getElementById('ec-gender').value = c.gender||'';
+  document.getElementById('ec-age').value = c.age||'';
+  document.getElementById('ec-contact').value = c.contact||'';
+  document.getElementById('ec-job').value = c.job||'';
+  document.getElementById('ec-history').value = c.history||'';
+  document.getElementById('ec-meds').value = c.meds||'';
+  document.getElementById('ec-contra').value = c.contra||'';
+  document.getElementById('ec-assessment').value = c.assessment||'';
+  document.getElementById('ec-meridian').value = c.meridian||'';
+  document.getElementById('ec-direction').value = c.direction||'';
+  clearChips('ec-constitution');
+  if (c.constitution) {
+    c.constitution.split('、').filter(Boolean).forEach(t => {
+      document.querySelectorAll('#ec-constitution .chip').forEach(chip => {
+        if (chip.textContent === t) chip.classList.add('on');
+      });
+    });
+  }
+  // sync therapist buttons
+  currentTherapist = c.therapist||'glan';
+  document.getElementById('eb-glan').classList.toggle('on', currentTherapist==='glan');
+  document.getElementById('eb-xuan').classList.toggle('on', currentTherapist==='xuan');
+  // override selectTherapist to also update eb buttons
+  show('s-edit-client');
+};
+
+window.saveEditClient = async () => {
+  const name = document.getElementById('ec-name').value.trim();
+  if (!name) { alert('請填寫客戶姓名'); return; }
+  setSyncing(true);
+  try {
+    await updateDoc(doc(db,'clients',currentClientId), {
+      name, therapist: currentTherapist,
+      gender: document.getElementById('ec-gender').value,
+      age: document.getElementById('ec-age').value,
+      contact: document.getElementById('ec-contact').value,
+      job: document.getElementById('ec-job').value,
+      history: document.getElementById('ec-history').value,
+      meds: document.getElementById('ec-meds').value,
+      contra: document.getElementById('ec-contra').value,
+      constitution: getChips('ec-constitution'),
+      assessment: document.getElementById('ec-assessment').value,
+      meridian: document.getElementById('ec-meridian').value,
+      direction: document.getElementById('ec-direction').value,
+    });
+  } finally { setSyncing(false); }
+  showProfile(currentClientId);
+};
+
+window.editSession = (idx) => {
+  const c = clients.find(x=>x.id===currentClientId);
+  if (!c) return;
+  const s = c.sessions[idx];
+  currentEditSessionIdx = idx;
+  document.getElementById('es-feedback').value = s.feedback||'';
+  document.getElementById('es-complaint').value = s.complaint||'';
+  document.getElementById('es-pb').value = s.pb||'';
+  document.getElementById('es-tb').value = s.tb||'';
+  document.getElementById('es-tongue').value = s.tongue||'';
+  document.getElementById('es-areas').value = s.areas||'';
+  document.getElementById('es-findings').value = s.findings||'';
+  document.getElementById('es-pa').value = s.pa||'';
+  document.getElementById('es-ta').value = s.ta||'';
+  document.getElementById('es-sleep').value = s.sleep||'';
+  document.getElementById('es-energy').value = s.energy||'';
+  document.getElementById('es-response').value = s.response||'';
+  document.getElementById('es-homecare').value = s.homecare||'';
+  document.getElementById('es-next').value = s.next||'';
+  clearChips('es-techniques');
+  if (s.techniques) {
+    s.techniques.split('、').filter(Boolean).forEach(t => {
+      document.querySelectorAll('#es-techniques .chip').forEach(chip => {
+        if (chip.textContent === t) chip.classList.add('on');
+      });
+    });
+  }
+  selectEditSessionTherapist(s.therapist||'glan');
+  show('s-edit-session');
+};
+
+window.saveEditSession = async () => {
+  const c = clients.find(x=>x.id===currentClientId);
+  if (!c || currentEditSessionIdx === null) return;
+  const sessions = [...(c.sessions||[])];
+  sessions[currentEditSessionIdx] = {
+    ...sessions[currentEditSessionIdx],
+    therapist: currentEditSessionTherapist,
+    feedback: document.getElementById('es-feedback').value,
+    complaint: document.getElementById('es-complaint').value,
+    pb: document.getElementById('es-pb').value,
+    tb: document.getElementById('es-tb').value,
+    tongue: document.getElementById('es-tongue').value,
+    areas: document.getElementById('es-areas').value,
+    techniques: getChips('es-techniques'),
+    findings: document.getElementById('es-findings').value,
+    pa: document.getElementById('es-pa').value,
+    ta: document.getElementById('es-ta').value,
+    sleep: document.getElementById('es-sleep').value,
+    energy: document.getElementById('es-energy').value,
+    response: document.getElementById('es-response').value,
+    homecare: document.getElementById('es-homecare').value,
+    next: document.getElementById('es-next').value,
+  };
   setSyncing(true);
   try { await updateDoc(doc(db,'clients',currentClientId),{sessions}); } finally { setSyncing(false); }
   showProfile(currentClientId);
