@@ -309,7 +309,9 @@ body { font-family: 'Noto Sans TC', sans-serif; background: var(--bg); color: va
   </div>
   <div class="divider"></div>
   <div class="section">
-    <div class="section-label">上次回報</div>
+    <div class="section-label">調理日期</div>
+    <div class="field"><label>日期</label><input id="es-date" type="date"></div>
+  </div>
     <div class="field"><label>客戶反映</label><textarea id="es-feedback"></textarea></div>
   </div>
   <div class="divider"></div>
@@ -391,6 +393,11 @@ body { font-family: 'Noto Sans TC', sans-serif; background: var(--bg); color: va
       <button class="therapist-btn glan" id="sb-glan" onclick="selectSessionTherapist('glan')">鈞</button>
       <button class="therapist-btn xuan" id="sb-xuan" onclick="selectSessionTherapist('xuan')">萱</button>
     </div>
+  </div>
+  <div class="divider"></div>
+  <div class="section">
+    <div class="section-label">調理日期</div>
+    <div class="field"><label>日期（預設今天，可修改）</label><input id="ns-date" type="date"></div>
   </div>
   <div class="divider"></div>
   <div class="section">
@@ -698,6 +705,12 @@ window.delSession = async (idx) => {
 window.showNewSession = () => {
   ['ns-feedback','ns-complaint','ns-pb','ns-tb','ns-tongue','ns-areas','ns-findings','ns-pa','ns-ta','ns-sleep','ns-energy','ns-response','ns-homecare','ns-next'].forEach(id=>document.getElementById(id).value='');
   clearChips('ns-techniques');
+  // Set today's date as default
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth()+1).padStart(2,'0');
+  const dd = String(today.getDate()).padStart(2,'0');
+  document.getElementById('ns-date').value = `${yyyy}-${mm}-${dd}`;
   const c = clients.find(x=>x.id===currentClientId);
   selectSessionTherapist(c?.therapist||'glan');
   show('s-new-session');
@@ -707,8 +720,10 @@ window.saveSession = async () => {
   const c = clients.find(x=>x.id===currentClientId);
   if (!c) return;
   const sessions = [...(c.sessions||[])];
+  const selectedDate = document.getElementById('ns-date').value;
+  const dateIso = selectedDate ? new Date(selectedDate + 'T12:00:00').toISOString() : new Date().toISOString();
   sessions.push({
-    date: new Date().toISOString(),
+    date: dateIso,
     therapist: currentSessionTherapist,
     feedback: document.getElementById('ns-feedback').value,
     complaint: document.getElementById('ns-complaint').value,
@@ -811,6 +826,14 @@ window.editSession = (idx) => {
   document.getElementById('es-response').value = s.response||'';
   document.getElementById('es-homecare').value = s.homecare||'';
   document.getElementById('es-next').value = s.next||'';
+  // Set date
+  if (s.date) {
+    const d = new Date(s.date);
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth()+1).padStart(2,'0');
+    const dd = String(d.getDate()).padStart(2,'0');
+    document.getElementById('es-date').value = `${yyyy}-${mm}-${dd}`;
+  }
   clearChips('es-techniques');
   if (s.techniques) {
     s.techniques.split('、').filter(Boolean).forEach(t => {
@@ -827,8 +850,11 @@ window.saveEditSession = async () => {
   const c = clients.find(x=>x.id===currentClientId);
   if (!c || currentEditSessionIdx === null) return;
   const sessions = [...(c.sessions||[])];
+  const editSelectedDate = document.getElementById('es-date').value;
+  const editDateIso = editSelectedDate ? new Date(editSelectedDate + 'T12:00:00').toISOString() : sessions[currentEditSessionIdx].date;
   sessions[currentEditSessionIdx] = {
     ...sessions[currentEditSessionIdx],
+    date: editDateIso,
     therapist: currentEditSessionTherapist,
     feedback: document.getElementById('es-feedback').value,
     complaint: document.getElementById('es-complaint').value,
