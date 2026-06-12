@@ -900,7 +900,7 @@ window.getAiFeedback = async (idx) => {
 （根據體質傾向與現有症狀，給予日常生活中具體可執行的養生方法、飲食建議、居家保健動作等）`;
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch('https://ai-proxy.a0985180305.workers.dev', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
