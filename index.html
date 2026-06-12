@@ -938,15 +938,37 @@ window.getAiFeedback = async (idx) => {
       return;
     }
 
-    // Parse sections
+    // Parse sections - try multiple formats
+    let review = '', nextDir = '', wellness = '';
+    
+    // Try bracket format first
     const reviewMatch = text.match(/\[本次調理回顧與手法建議\]([\s\S]*?)(?=\[下次調理方向|$)/);
     const nextMatch = text.match(/\[下次調理方向與重點觀察\]([\s\S]*?)(?=\[客人養生|$)/);
     const wellnessMatch = text.match(/\[客人養生與居家保健建議\]([\s\S]*?)$/);
+    
+    if (reviewMatch) review = reviewMatch[1].trim();
+    if (nextMatch) nextDir = nextMatch[1].trim();
+    if (wellnessMatch) wellness = wellnessMatch[1].trim();
+    
+    // If bracket format failed, try to split by common section markers
+    if (!review && !nextDir && !wellness) {
+      const parts = text.split(/(?=🔧|🎯|🌿|##|###)/);
+      parts.forEach(p => {
+        if (p.match(/🔧|本次調理回顧|手法建議/)) review = p.replace(/^[🔧\s#]+本次調理回顧與手法建議[^\n]*\n?/, '').trim();
+        else if (p.match(/🎯|下次調理方向|重點觀察/)) nextDir = p.replace(/^[🎯\s#]+下次調理方向與重點觀察[^\n]*\n?/, '').trim();
+        else if (p.match(/🌿|養生|居家保健/)) wellness = p.replace(/^[🌿\s#]+客人養生與居家保健建議[^\n]*\n?/, '').trim();
+      });
+    }
+    
+    // If still empty, just put everything in review
+    if (!review && !nextDir && !wellness) {
+      review = text;
+    }
 
     const aiFeedback = {
-      review: reviewMatch ? reviewMatch[1].trim() : '',
-      next: nextMatch ? nextMatch[1].trim() : '',
-      wellness: wellnessMatch ? wellnessMatch[1].trim() : '',
+      review: review,
+      next: nextDir,
+      wellness: wellness,
       generatedAt: new Date().toISOString()
     };
 
