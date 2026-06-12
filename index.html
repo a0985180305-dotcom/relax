@@ -676,6 +676,7 @@ function renderSessions(c) {
       </div>`:''}
       ${s.aiFeedback ? `<div class="ai-feedback-box">
         <div class="ai-header"><span class="ai-badge">AI 專家回饋</span><button class="btn btn-sm btn-ghost" style="margin-left:auto;font-size:11px;" onclick="regenAiFeedback(${i})">重新產生</button></div>
+        ${s.aiFeedback.overall?`<div class="ai-section"><div class="ai-section-title">📋 客戶整體評估與趨勢觀察</div><div class="ai-section-body">${s.aiFeedback.overall}</div></div>`:''}
         ${s.aiFeedback.review?`<div class="ai-section"><div class="ai-section-title">🔧 本次調理回顧與手法建議</div><div class="ai-section-body">${s.aiFeedback.review}</div></div>`:''}
         ${s.aiFeedback.next?`<div class="ai-section"><div class="ai-section-title">🎯 下次調理方向與重點觀察</div><div class="ai-section-body">${s.aiFeedback.next}</div></div>`:''}
         ${s.aiFeedback.wellness?`<div class="ai-section"><div class="ai-section-title">🌿 客人養生與居家保健建議</div><div class="ai-section-body">${s.aiFeedback.wellness}</div></div>`:''}
@@ -894,12 +895,23 @@ window.getAiFeedback = async (idx) => {
   const btn = card ? card.querySelector('button[onclick*="getAiFeedback"]') : null;
   if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner" style="width:14px;height:14px;border-width:2px;display:inline-block;vertical-align:middle;margin-right:6px;"></span>AI 分析中…'; }
 
-  const prompt = `你是一位擁有20年豐富實務與深厚理論知識的資深中醫師、經絡調理師與物理治療師。
-請根據以下這次的調理紀錄，給予這位調理師專業且具體的回饋與建議。
+  const allSessions = c.sessions || [];
+  const historyText = allSessions.length > 1 ? allSessions.slice(0, -1).map((hs, hi) => `
+第 ${hi+1} 次（${fmt(hs.date)}）調理師：${hs.therapist==='glan'?'鈞':'萱'}
+- 主訴：${hs.complaint||'未填'}
+- 操作：${hs.areas||'未填'} ／ 手法：${hs.techniques||'未填'}
+- 疼痛 ${hs.pb||'—'}→${hs.pa||'—'} ／ 睡眠：${hs.sleep||'—'} ／ 精神：${hs.energy||'—'}
+- 特別發現：${hs.findings||'無'}
+- 即時感受：${hs.response||'無'}
+- 居家建議：${hs.homecare||'無'}`).join('\n') : '（本次為初次調理）';
 
-【客戶基本資料】
-姓名：${c.name}
-性別：${c.gender||'未填'}　年齡：${c.age||'未填'}
+  const prompt = `你是一位擁有20年豐富實務與深厚理論知識的資深中醫師、經絡調理師與物理治療師。
+請根據以下客戶的完整資料與所有調理紀錄，給予這位調理師專業且具體的回饋與建議。
+
+═══════════════════════
+【客戶個人檔案】
+═══════════════════════
+姓名：${c.name}　性別：${c.gender||'未填'}　年齡：${c.age||'未填'}
 職業：${c.job||'未填'}
 病史／手術史：${c.history||'無'}
 目前用藥：${c.meds||'無'}
@@ -908,8 +920,15 @@ window.getAiFeedback = async (idx) => {
 初診評估：${c.assessment||'未填'}
 長期調理方向：${c.direction||'未填'}
 
-【本次調理紀錄】
-調理日期：${fmt(s.date)}　第 ${idx+1} 次
+═══════════════════════
+【歷次調理紀錄摘要】（共 ${allSessions.length} 次）
+═══════════════════════
+${historyText}
+
+═══════════════════════
+【本次調理完整紀錄】（第 ${idx+1} 次，${fmt(s.date)}）
+═══════════════════════
+調理師：${s.therapist==='glan'?'鈞':'萱'}
 上次回報：${s.feedback||'無'}
 今日主訴：${s.complaint||'無'}
 舌象：${s.tongue||'未觀察'}
@@ -923,13 +942,17 @@ window.getAiFeedback = async (idx) => {
 居家保養建議：${s.homecare||'無'}
 預計下次重點：${s.next||'無'}
 
-請用繁體中文，針對以下三個面向給予回饋，每個面向以條列式說明，具體且實用：
+═══════════════════════
+請用繁體中文，針對以下四個面向給予回饋。每個面向請用條列式說明，具體且實用，並在每個面向開頭標示對應標題：
+
+[客戶整體評估與趨勢觀察]
+（根據所有歷次紀錄，分析客戶的整體改善趨勢、尚未解決的核心問題、體質變化方向，以及目前調理策略是否需要調整）
 
 [本次調理回顧與手法建議]
-（根據操作部位、手法、特別發現，給予手法選擇與施作順序上的專業建議，包含可調整或加強之處）
+（根據本次操作部位、手法、特別發現，給予手法選擇與施作順序上的專業建議，包含可調整或加強之處）
 
 [下次調理方向與重點觀察]
-（根據本次反應與客戶體質，建議下次優先處理的經絡與部位、施作重點，以及調理前應特別觀察的指標）
+（根據本次反應與客戶整體體質，建議下次優先處理的經絡與部位、施作重點，以及調理前應特別觀察的指標）
 
 [客人養生與居家保健建議]
 （根據體質傾向與現有症狀，給予日常生活中具體可執行的養生方法、飲食建議、居家保健動作等）`;
@@ -963,34 +986,34 @@ window.getAiFeedback = async (idx) => {
       return;
     }
 
-    // Parse sections - try multiple formats
-    let review = '', nextDir = '', wellness = '';
+    // Parse 4 sections
+    let overall = '', review = '', nextDir = '', wellness = '';
     
-    // Try bracket format first
+    const overallMatch = text.match(/\[客戶整體評估與趨勢觀察\]([\s\S]*?)(?=\[本次調理回顧|$)/);
     const reviewMatch = text.match(/\[本次調理回顧與手法建議\]([\s\S]*?)(?=\[下次調理方向|$)/);
     const nextMatch = text.match(/\[下次調理方向與重點觀察\]([\s\S]*?)(?=\[客人養生|$)/);
     const wellnessMatch = text.match(/\[客人養生與居家保健建議\]([\s\S]*?)$/);
     
+    if (overallMatch) overall = overallMatch[1].trim();
     if (reviewMatch) review = reviewMatch[1].trim();
     if (nextMatch) nextDir = nextMatch[1].trim();
     if (wellnessMatch) wellness = wellnessMatch[1].trim();
     
-    // If bracket format failed, try to split by common section markers
-    if (!review && !nextDir && !wellness) {
-      const parts = text.split(/(?=🔧|🎯|🌿|##|###)/);
+    // Fallback: try emoji markers
+    if (!overall && !review && !nextDir && !wellness) {
+      const parts = text.split(/(?=📋|🔧|🎯|🌿|##)/);
       parts.forEach(p => {
-        if (p.match(/🔧|本次調理回顧|手法建議/)) review = p.replace(/^[🔧\s#]+本次調理回顧與手法建議[^\n]*\n?/, '').trim();
-        else if (p.match(/🎯|下次調理方向|重點觀察/)) nextDir = p.replace(/^[🎯\s#]+下次調理方向與重點觀察[^\n]*\n?/, '').trim();
-        else if (p.match(/🌿|養生|居家保健/)) wellness = p.replace(/^[🌿\s#]+客人養生與居家保健建議[^\n]*\n?/, '').trim();
+        if (p.match(/📋|整體評估|趨勢觀察/)) overall = p.replace(/^[📋\s#]+[^\n]*\n?/, '').trim();
+        else if (p.match(/🔧|本次調理回顧|手法建議/)) review = p.replace(/^[🔧\s#]+[^\n]*\n?/, '').trim();
+        else if (p.match(/🎯|下次調理方向|重點觀察/)) nextDir = p.replace(/^[🎯\s#]+[^\n]*\n?/, '').trim();
+        else if (p.match(/🌿|養生|居家保健/)) wellness = p.replace(/^[🌿\s#]+[^\n]*\n?/, '').trim();
       });
     }
     
-    // If still empty, just put everything in review
-    if (!review && !nextDir && !wellness) {
-      review = text;
-    }
+    if (!overall && !review && !nextDir && !wellness) review = text;
 
     const aiFeedback = {
+      overall: overall,
       review: review,
       next: nextDir,
       wellness: wellness,
