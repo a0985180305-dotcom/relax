@@ -673,7 +673,7 @@ function renderSessions(c) {
         ${s.next?`<div class="note-block" style="margin-bottom:0"><div class="note-label">下次調理重點</div><div class="note-text">${s.next}</div></div>`:''}
       </div>`:''}
       ${s.aiFeedback ? `<div class="ai-feedback-box">
-        <div class="ai-header"><span class="ai-badge">AI 專家回饋</span></div>
+        <div class="ai-header"><span class="ai-badge">AI 專家回饋</span><button class="btn btn-sm btn-ghost" style="margin-left:auto;font-size:11px;" onclick="regenAiFeedback(${i})">重新產生</button></div>
         ${s.aiFeedback.review?`<div class="ai-section"><div class="ai-section-title">🔧 本次調理回顧與手法建議</div><div class="ai-section-body">${s.aiFeedback.review}</div></div>`:''}
         ${s.aiFeedback.next?`<div class="ai-section"><div class="ai-section-title">🎯 下次調理方向與重點觀察</div><div class="ai-section-body">${s.aiFeedback.next}</div></div>`:''}
         ${s.aiFeedback.wellness?`<div class="ai-section"><div class="ai-section-title">🌿 客人養生與居家保健建議</div><div class="ai-section-body">${s.aiFeedback.wellness}</div></div>`:''}
@@ -847,6 +847,16 @@ window.saveEditSession = async () => {
   try { await updateDoc(doc(db,'clients',currentClientId),{sessions}); } finally { setSyncing(false); }
   showProfile(currentClientId);
 };
+window.regenAiFeedback = async (idx) => {
+  const c = clients.find(x=>x.id===currentClientId);
+  if (!c) return;
+  const sessions = [...(c.sessions||[])];
+  sessions[idx] = { ...sessions[idx], aiFeedback: null };
+  setSyncing(true);
+  try { await updateDoc(doc(db,'clients',currentClientId),{sessions}); } finally { setSyncing(false); }
+  await getAiFeedback(idx);
+};
+
 window.getAiFeedback = async (idx) => {
   const c = clients.find(x=>x.id===currentClientId);
   if (!c) return;
